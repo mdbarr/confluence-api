@@ -41,7 +41,7 @@ export default class Confluence {
         };
     }
 
-    async fetch(url: string, method: string = 'GET', body: any = undefined, toJSON: Boolean = false): Promise<any> {
+    async fetch(url: string, method: string = 'GET', toJSON: Boolean = true, body: any = undefined,): Promise<any> {
         const auth = Buffer
             .from(`${this.config.username}:${this.config.password}`)
             .toString("base64");
@@ -71,7 +71,7 @@ export default class Confluence {
         let res;
         do {
             let url = this.config.baseUrl + this.config.apiPath + "/space" + this.config.extension + `?limit=100&start=${start}`;
-            res = await this.fetch(url);
+            res = await this.fetch(url, 'GET', true);
             spaces.push(...res.results);
             start = res.start + res.limit;
         } while (res.size === res.limit)
@@ -132,7 +132,7 @@ export default class Confluence {
             }
         };
         let url = this.config.baseUrl + this.config.apiPath + "/content" + this.config.extension;
-        return (await this.fetch(url, 'POST', page))
+        return (await this.fetch(url, 'POST', true, page))
     }
 
     async putContent(space: string, id: string, version: number, title: string, content: string, minorEdit: boolean, representation: string) {
@@ -155,7 +155,7 @@ export default class Confluence {
             }
         };
         let url = this.config.baseUrl + this.config.apiPath + "/content/" + id + this.config.extension + "?expand=body.storage,version";
-        return (await this.fetch(url, 'PUT', page))
+        return (await this.fetch(url, 'PUT', true, page))
     }
 
     async deleteContent(id: string) {
@@ -212,7 +212,7 @@ export default class Confluence {
 
     async postLabels(id: string, labels: string) {
         let url = this.config.baseUrl + this.config.apiPath + "/content/" + id + "/label";
-        return (await this.fetch(url, 'POST', labels));
+        return (await this.fetch(url, 'POST', true, labels));
     }
 
     async deleteLabel(id: string, label: string) {
@@ -230,19 +230,19 @@ export default class Confluence {
         let url = this.config.baseUrl + this.config.apiPath +
             "/content/" + id +
             "/child/" + child_type + "?expand=body.storage,version";
-        return (await this.fetch(url, 'GET', undefined, true));
+        return (await this.fetch(url));
     }
 
     async getContentDescendantByContentId(id: string, child_type: string) {
         let url = this.config.baseUrl + this.config.apiPath +
             "/content/" + id +
             "/descendant/" + child_type + "?expand=body.storage,version";
-        return (await this.fetch(url, 'GET"', undefined, true));
+        return (await this.fetch(url));
     }
 
     async getPageAsPdf(id): Promise<any> {
         let url = this.config.baseUrl + `/spaces/flyingpdf/pdfpageexport.action?pageId=${id}`;
-        let res = await this.fetch(url);
+        let res = await this.fetch(url, 'GET', false);
         // extract ajs-taskId
         let taskIdRegex = /name=\"ajs-taskId\" content=\"(.*?)\">/;
         let taskId = taskIdRegex.exec(res)[1];
@@ -251,7 +251,7 @@ export default class Confluence {
             // pending for 5s
             await new Promise(resolve => setTimeout(resolve, 5000));
             let taskUrl = this.config.baseUrl + `/runningtaskxml.action?taskId=${taskId}`;
-            let statusResAsText = await this.fetch(taskUrl);
+            let statusResAsText = await this.fetch(taskUrl, 'GET', false);
             // read pdf processing status
             let isCompleteRegex = /<isComplete>(.*?)<\/isComplete>/;
             let isComplete = isCompleteRegex.exec(statusResAsText);
@@ -264,7 +264,7 @@ export default class Confluence {
                 }
                 let pdfUrlRegex = /href=&quot;\/wiki\/(.*?)&quot/;
                 let pdfUrl = this.config.baseUrl + "/" + pdfUrlRegex.exec(statusResAsText)[1];
-                let pdfresp = await this.fetch(pdfUrl);
+                let pdfresp = await this.fetch(pdfUrl, 'GET', false);
                 return pdfresp;
             }
         }
