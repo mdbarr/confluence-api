@@ -55,6 +55,14 @@
     {
       "name": "Ben Limmer",
       "url": "https://github.com/blimmer"
+    },
+    {
+      "name": "Rémi Cattiau",
+      "url": "https://github.com/loopingz"
+    },
+    {
+      "name": "Wilfried Martinache",
+      "url": "https://github.com/8llouch"
     }
   ],
   "license": "MIT",
@@ -68,6 +76,8 @@
     "mocha": "*"
   },
   "dependencies": {
-    "superagent": "^3.8.3"
+    "@types/node": "^14.6.0",
+    "form-data": "^3.0.0",
+    "node-fetch": "^2.6.0"
   }
 }

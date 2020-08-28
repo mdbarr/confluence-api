@@ -1,8 +1,12 @@
 .idea/
 .history/
 node_modules/
+/lib
+/old
+yarn.lock
+package-lock.json
 
 .DS_Store
 npm-debug.log
 test/file.txt
-package-lock.json
+
