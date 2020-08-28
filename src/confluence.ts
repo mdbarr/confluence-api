@@ -2,15 +2,27 @@ import fetch from "node-fetch";
 import { createReadStream } from "fs";
 var FormData = require('form-data');
 
+/**
+ * Configuration of the client
+ */
 export interface Config {
     username: string;
     password: string;
     baseUrl: string;
     version?: number;
-    apiPath: string;
-    extension?: string;
+    apiPath?: string;
 }
 
+/**
+ * Configuration enhanced with computed information
+ */
+interface InternalConfig extends Config {
+    extension: string;
+}
+
+/**
+ * Space definition
+ */
 export interface Space {
     id: number,
     key: string,
@@ -24,23 +36,45 @@ export interface Space {
     }
 }
 
+/**
+ * Page definition
+ */
 export interface Page {
     id: string;
 }
 
+/**
+ * Main Confluence API client class
+ */
 export default class Confluence {
-    config: Config;
+    config: InternalConfig;
+
+    /**
+     * Create a new client
+     * 
+     * Password can either be the user password or a user token
+     * 
+     * @param config of the client
+     */
     constructor(config: Config) {
         this.config = {
             username: config.username,
             password: config.password,
             baseUrl: config.baseUrl,
             version: config.version,
-            apiPath: (config.version === 4) ? '/rest/prototype/latest' : '/rest/api',
+            apiPath: config.apiPath || (config.version === 4) ? '/rest/prototype/latest' : '/rest/api',
             extension: (config.version === 4) ? '.json' : ''
         };
     }
 
+    /**
+     * Do a request on the API
+     * 
+     * @param url to fetch
+     * @param method to use
+     * @param toJSON parse result into JSON Object
+     * @param body content of the request
+     */
     async fetch(url: string, method: string = 'GET', toJSON: Boolean = true, body: any = undefined,): Promise<any> {
         const auth = Buffer
             .from(`${this.config.username}:${this.config.password}`)
@@ -65,6 +99,9 @@ export default class Confluence {
         return await res.buffer();
     }
 
+    /**
+     * Return all known spaces to the user
+     */
     async getSpaces(): Promise<Space[]> {
         let spaces = [];
         let start = 0;
@@ -80,11 +117,13 @@ export default class Confluence {
     }
 
     /**
+     * Return one specific space
      * 
-     * @param space 
+     * @param space to retrieve
+     * @throw Error SPACE not found if not found
      */
-    async getSpace(space: string): Promise<Space> {
-        let url = this.config.baseUrl + this.config.apiPath + "/space" + this.config.extension + "?spaceKey=" + space;
+    async getSpace(spaceKey: string): Promise<Space> {
+        let url = this.config.baseUrl + this.config.apiPath + "/space" + this.config.extension + "?spaceKey=" + spaceKey;
         let res = await this.fetch(url);
         if (res.size === 0) {
             throw new Error("SPACE not found");
@@ -92,8 +131,12 @@ export default class Confluence {
         return res.results[0];
     }
 
-    async getSpaceHomePage(space: string): Promise<Page> {
-        return await this.fetch(this.config.baseUrl + (await this.getSpace(space))._expandable.homepage);
+    /**
+     * 
+     * @param spaceKey  to retrieve home page from
+     */
+    async getSpaceHomePage(spaceKey: string): Promise<Page> {
+        return await this.fetch(this.config.baseUrl + (await this.getSpace(spaceKey))._expandable.homepage);
     }
 
     async getContentById(id) {
@@ -272,3 +315,4 @@ export default class Confluence {
     }
 }
 
+export { Confluence };

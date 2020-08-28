@@ -1,16 +1,20 @@
 {
-  "name": "confluence-api",
-  "version": "1.4.0",
-  "description": "Confluence API wrapper for NodeJS",
+  "name": "@webda/confluence-api",
+  "version": "1.9.0",
+  "description": "Confluence API wrapper for NodeJS\nRewrite in typescript from https://github.com/johnpduane/confluence-api",
   "main": "./lib/confluence.js",
   "scripts": {
+    "pretest": "tsc",
     "test": "./node_modules/.bin/mocha --reporter spec",
     "create-docs": "jsdoc2md lib/confluence.js > api.md"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/johnpduane/confluence-api.git"
+    "url": "http://github.com/loopingz/confluence-api.git"
   },
+  "files": [
+    "lib"
+  ],
   "keywords": [
     "atlassian",
     "confluence",
@@ -18,7 +22,7 @@
     "wiki",
     "node.js"
   ],
-  "author": "John Duane <johnpduane@gmail.com>",
+  "author": "Wilfried Martinache <wmartinache@loopingz.com>",
   "contributors": [
     {
       "name": "John Duane",
@@ -67,16 +71,18 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/johnpduane/confluence-api/issues"
+    "url": "https://github.com/loopingz/confluence-api/issues"
   },
-  "homepage": "https://github.com/johnpduane/confluence-api",
+  "homepage": "https://github.com/loopingz/confluence-api",
   "devDependencies": {
+    "@types/node": "^10.0.0",
     "chai": "*",
     "jsdoc-to-markdown": "^4.0.1",
-    "mocha": "*"
+    "mocha": "*",
+    "standard-version": "^9.0.0",
+    "typescript": "^4.0.2"
   },
   "dependencies": {
-    "@types/node": "^14.6.0",
     "form-data": "^3.0.0",
     "node-fetch": "^2.6.0"
   }

@@ -9,7 +9,7 @@
  */
 
 var expect = require('chai').expect;
-var Confluence = require("../lib/confluence");
+var Confluence = require("../lib/confluence").Confluence;
 var path = require("path");
 var fs = require('fs');
 
