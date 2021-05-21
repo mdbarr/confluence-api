@@ -178,7 +178,7 @@ export default class Confluence {
         return (await this.fetch(url, 'POST', true, page))
     }
 
-    async putContent(space: string, id: string, version: number, title: string, content: string, minorEdit: boolean, representation: string) {
+    async putContent(space: string, id: string, version: number, title: string, content: string, minorEdit?: boolean, representation?: string) {
         var page = {
             "id": id,
             "type": "page",
