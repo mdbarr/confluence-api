@@ -51,9 +51,9 @@ export default class Confluence {
 
     /**
      * Create a new client
-     * 
+     *
      * Password can either be the user password or a user token
-     * 
+     *
      * @param config of the client
      */
     constructor(config: Config) {
@@ -69,7 +69,7 @@ export default class Confluence {
 
     /**
      * Do a request on the API
-     * 
+     *
      * @param url to fetch
      * @param method to use
      * @param toJSON parse result into JSON Object
@@ -118,7 +118,7 @@ export default class Confluence {
 
     /**
      * Return one specific space
-     * 
+     *
      * @param space to retrieve
      * @throw Error SPACE not found if not found
      */
@@ -132,7 +132,7 @@ export default class Confluence {
     }
 
     /**
-     * 
+     *
      * @param spaceKey  to retrieve home page from
      */
     async getSpaceHomePage(spaceKey: string): Promise<Page> {
@@ -156,7 +156,7 @@ export default class Confluence {
         return (await this.fetch(url));
     }
 
-    async postContent(space: string, title: string, content: string, parentId: string = undefined, representation: string = "storage") {
+  async postContent(space: string, title: string, content: string, parentId: string = undefined, metadata: any = {}, representation: string = "storage") {
         let page = {
             "type": "page",
             "title": title,
@@ -172,8 +172,10 @@ export default class Confluence {
                     "value": content,
                     "representation": representation
                 }
-            }
+            },
+            "metadata": metadata,
         };
+
         let url = this.config.baseUrl + this.config.apiPath + "/content" + this.config.extension;
         return (await this.fetch(url, 'POST', true, page))
     }
@@ -298,7 +300,7 @@ export default class Confluence {
             // read pdf processing status
             let isCompleteRegex = /<isComplete>(.*?)<\/isComplete>/;
             let isComplete = isCompleteRegex.exec(statusResAsText);
-            // 
+            //
             if (isComplete && isComplete[1] === "true") {
                 let isSuccessfullRegex = /<isSuccessful>(.*?)<\/isSuccessful>/;
                 let isSuccessful = isSuccessfullRegex.exec(statusResAsText);
